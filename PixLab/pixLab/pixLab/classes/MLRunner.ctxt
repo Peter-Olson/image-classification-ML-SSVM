@@ -1,0 +1,6 @@
+#BlueJ class context
+comment0.target=MLRunner
+comment0.text=\r\n\ Runs\ the\ machine\ learning\ image\ detection\ program\r\n\r\n\ @author\ Peter\ Olson\ mrpeterfolson@gmail.com\r\n
+comment1.params=args
+comment1.target=void\ main(java.lang.String[])
+numComments=2
