@@ -34,38 +34,59 @@ import javax.swing.JFrame;
  * @author Peter Olson mrpeterfolson@gmail.com
  * @version 7/15/22
  */
-public class MLDetector
-{
+public class MLDetector {
     /* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
     /* @@@@@@@@@@@@@@@ BEGIN FEATURE METHODS @@@@@@@@@@@@@@@ */
     
+    public double numIntersections( Picture pic ) {
+        Pixel[][] pixels = pic.getPixels2D();
+        int numOfIntersections = 0;
+        double avgNumIntersections = 0.0;
+        boolean inWhiteSection = false;
+        boolean hasEncounteredWhitePixelInRow = false;
+        int totalRowsWithWhitePixels = 0;
+        
+        for( int row = 0; row < pixels.length; row++ ) {
+            for( int col = 0; col < pixels[row].length; col++ ) {
+                if( !inWhiteSection && pixels[row][col].getColor().equals( Color.WHITE ) ) {
+                    inWhiteSection = true;
+                    numOfIntersections++;
+                    if( !hasEncounteredWhitePixelInRow )
+                        totalRowsWithWhitePixels++;
+                    hasEncounteredWhitePixelInRow = true;
+                } else if( inWhiteSection && pixels[row][col].getColor().equals( Color.WHITE ) ) {
+                    inWhiteSection = false;
+                }
+            }
+            avgNumIntersections += (double)numOfIntersections;
+        }
+        
+        avgNumIntersections /= totalRowsWithWhitePixels;
+        
+        return avgNumIntersections;
+    }
+    
     /**
-     * @@For B/W only:@@
-     * 
-     * Feature based on the ratio of the average object width (based on white pixels)
+     * [B/W] Feature based on the ratio of the average object width (based on white pixels)
      * against the width of this picture
      * 
      * @param pic The instance being looked at (the picture)
      * @return double The ratio of the average object width based on white pixels
      *                divided by the width of the Picture
      */
-    public double avgObjectWidth( Picture pic )
-    {
+    public double avgObjectWidth( Picture pic ) {
         Pixel[][] pixels = pic.getPixels2D();
         
         ArrayList<Double> widths = new ArrayList<Double>();
         double totalWidth = pixels[0].length;
         
-        for( int row = 0; row < pixels.length; row++ )
-        {
+        for( int row = 0; row < pixels.length; row++ ) {
             double lineWidth = 0.0;
             double firstWhitePixelCol = pixels[0].length;
             double lastWhitePixelCol = 0.0;
             boolean firstWhitePixelFound = false;
-            for( int col = 0; col < pixels[0].length; col++ )
-            {
-                if( !firstWhitePixelFound && pixels[row][col].getColor().equals( Color.WHITE ) )
-                {
+            for( int col = 0; col < pixels[0].length; col++ ) {
+                if( !firstWhitePixelFound && pixels[row][col].getColor().equals( Color.WHITE ) ) {
                     if( col < firstWhitePixelCol )
                         firstWhitePixelCol = col;
                     
@@ -84,40 +105,33 @@ public class MLDetector
         
         int size = widths.size();
         double sumOfWidths = 0.0;
-        int rep = 0;
-        for( ; rep < size; rep++ )
+        for( int rep = 0; rep < size; rep++ )
             sumOfWidths += widths.get(rep);
         
         return (sumOfWidths / (double)size) / (double)totalWidth;
     }
     
     /**
-     * @@For B/W only:@@
-     * 
-     * Feature based on the ratio of the average object height (based on white pixels)
+     * [B/W] Feature based on the ratio of the average object height (based on white pixels)
      * against the height of this picture
      * 
      * @param pic The instance being looked at (the picture)
      * @return double The ratio of the average object height based on white pixels
      *                divided by the height of the Picture
      */
-    public double avgObjectHeight( Picture pic )
-    {
+    public double avgObjectHeight( Picture pic ) {
         Pixel[][] pixels = pic.getPixels2D();
         
         ArrayList<Double> heights = new ArrayList<Double>();
         double totalHeight = pixels.length;
 
-        for( int col = 0; col < pixels[0].length; col++ )
-        {
+        for( int col = 0; col < pixels[0].length; col++ ) {
             double colHeight = 0.0;
             double firstWhitePixelRow = pixels.length;
             double lastWhitePixelRow = 0.0;
             boolean firstWhitePixelFound = false;
-            for( int row = 0; row < pixels.length; row++ )
-            {
-                if( !firstWhitePixelFound && pixels[row][col].getColor().equals( Color.WHITE ) )
-                {
+            for( int row = 0; row < pixels.length; row++ ) {
+                if( !firstWhitePixelFound && pixels[row][col].getColor().equals( Color.WHITE ) ) {
                     if( row < firstWhitePixelRow )
                         firstWhitePixelRow = row;
                         
@@ -136,25 +150,21 @@ public class MLDetector
         
         int size = heights.size();
         double sumOfHeights = 0.0;
-        int rep = 0;
-        for( ; rep < size; rep++ )
+        for( int rep = 0; rep < size; rep++ )
             sumOfHeights += heights.get(rep);
         
         return (sumOfHeights / (double)size) / (double)totalHeight;
     }
     
     /**
-     * @@For B/W only:@@
-     * 
-     * Feature based on the ratio of the object width based on white pixels
+     * [B/W] Feature based on the ratio of the object width based on white pixels
      * against the width of this picture
      * 
      * @param pic The instance being looked at (the picture)
      * @return double The ratio of the object width based on white pixels
      *                divided by the width of the Picture
      */
-    public double maxObjectWidth( Picture pic )
-    {
+    public double maxObjectWidth( Picture pic ) {
         Pixel[][] pixels = pic.getPixels2D();
         
         double maxWidth = 0.0;
@@ -162,14 +172,11 @@ public class MLDetector
         double lastWhitePixelCol = 0.0;
         double totalWidth = pixels[0].length;
         
-        for( int row = 0; row < pixels.length; row++ )
-        {
+        for( int row = 0; row < pixels.length; row++ ) {
             double lineWidth = 0.0;
             boolean firstWhitePixelFound = false;
-            for( int col = 0; col < pixels[0].length; col++ )
-            {
-                if( !firstWhitePixelFound && pixels[row][col].getColor().equals( Color.WHITE ) )
-                {
+            for( int col = 0; col < pixels[0].length; col++ ) {
+                if( !firstWhitePixelFound && pixels[row][col].getColor().equals( Color.WHITE ) ) {
                     if( col < firstWhitePixelCol )
                         firstWhitePixelCol = col;
                     
@@ -190,17 +197,14 @@ public class MLDetector
     }
     
     /**
-     * @@For B/W only:@@
-     * 
-     * Feature based on the ratio of the object height based on white pixels
+     * [B/W] Feature based on the ratio of the object height based on white pixels
      * against the height of this picture
      * 
      * @param pic The instance being looked at (the picture)
      * @return double The ratio of the object height based on white pixels
      *                divided by the height of the Picture
      */
-    public double maxObjectHeight( Picture pic )
-    {
+    public double maxObjectHeight( Picture pic ) {
         Pixel[][] pixels = pic.getPixels2D();
         
         double maxHeight = 0.0;
@@ -208,14 +212,11 @@ public class MLDetector
         double lastWhitePixelRow = 0.0;
         double totalHeight = pixels.length;
 
-        for( int col = 0; col < pixels[0].length; col++ )
-        {
+        for( int col = 0; col < pixels[0].length; col++ ) {
             double colHeight = 0.0;
             boolean firstWhitePixelFound = false;
-            for( int row = 0; row < pixels.length; row++ )
-            {
-                if( !firstWhitePixelFound && pixels[row][col].getColor().equals( Color.WHITE ) )
-                {
+            for( int row = 0; row < pixels.length; row++ ) {
+                if( !firstWhitePixelFound && pixels[row][col].getColor().equals( Color.WHITE ) ) {
                     if( row < firstWhitePixelRow )
                         firstWhitePixelRow = row;
                         
@@ -236,15 +237,12 @@ public class MLDetector
     }
     
     /**
-     * @@For B/W only:@@
-     * 
-     * Feature based on the ratio of black to white pixels
+     * [B/W] Feature based on the ratio of black to white pixels
      * 
      * @param pic The instance being looked at (the picture)
      * @return double The ratio of white pixels to total pixels
      */
-    public double totalWhitePixels( Picture pic )
-    {
+    public double totalWhitePixels( Picture pic ) {
         Pixel[][] pixels = pic.getPixels2D();
         
         double totalWhite = 0.0;
@@ -259,27 +257,22 @@ public class MLDetector
     }
     
     /**
-     * @@For B/W only:@@
-     * 
-     * Feature based on the ratio of the largest width of continuous
+     * [B/W] Feature based on the ratio of the largest width of continuous
      * white pixels of the object detected against the width of this picture
      * 
      * @param pic The instance being looked at (the picture)
      * @return double The ratio of the largest band of white pixels in a row
      *                divided by the width of the Picture
      */
-    public double whiteWidth( Picture pic )
-    {
+    public double whiteWidth( Picture pic ) {
         Pixel[][] pixels = pic.getPixels2D();
         
         double maxWidth = 0.0;
         double totalWidth = pixels[0].length;
         
-        for( int row = 0; row < pixels.length; row++ )
-        {
+        for( int row = 0; row < pixels.length; row++ ) {
             double lineWidth = 0.0;
-            for( int col = 0; col < pixels[0].length; col++ )
-            {
+            for( int col = 0; col < pixels[0].length; col++ ) {
                 if( pixels[row][col].getColor().equals( Color.WHITE ) )
                     lineWidth += 1.0;
             }
@@ -292,27 +285,22 @@ public class MLDetector
     }
     
     /**
-     * @@For B/W only:@@
-     * 
-     * Feature based on the ratio of the largest height of continuous
+     * [B/W] Feature based on the ratio of the largest height of continuous
      * white pixels of the object detected against the height of this picture
      * 
      * @param pic The instance being looked at (the picture)
      * @return double The ratio of the largest band of white pixels in a column
      *                divided by the height of the Picture
      */
-    public double whiteHeight( Picture pic )
-    {
+    public double whiteHeight( Picture pic ) {
         Pixel[][] pixels = pic.getPixels2D();
         
         double maxHeight = 0.0;
         double totalWidth = pixels[0].length;
         
-        for( int col = 0; col < pixels[0].length; col++ )
-        {
+        for( int col = 0; col < pixels[0].length; col++ ) {
             double colWidth = 0.0;
-            for( int row = 0; row < pixels.length; row++ )
-            {
+            for( int row = 0; row < pixels.length; row++ ) {
                 if( pixels[row][col].getColor().equals( Color.WHITE ) )
                     colWidth += 1.0;
             }
@@ -385,11 +373,10 @@ public class MLDetector
      * @param usingTrainingData True if the program is currently using training data.
      *                          False if the program is currently using test data
      */
-    public void runDetector( int iterations, boolean usingTrainingData )
-    {
+    public void runDetector( int iterations, boolean usingTrainingData ) {
         Random random = new Random();
         DecimalFormat df = new DecimalFormat("0.##");
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner( System.in );
         
          /*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*/
          /*@@@@@@ NOTE: These variables may need to be changed if using different types @@@@@@*/
@@ -414,8 +401,7 @@ public class MLDetector
         if( usingTrainingData )
             generateWeights( weightsFileName );
         
-        for( int rep = 0; rep < iterations && trainingDataImagesSize > 0; rep++ )
-        {
+        for( int rep = 0; rep < iterations && trainingDataImagesSize > 0; rep++ ) {
             int fileNumber = random.nextInt( trainingDataImagesSize-- );
             File file = imgFiles.remove( fileNumber );
             String fileName = file.getName();
@@ -437,6 +423,7 @@ public class MLDetector
             double X_maxObjectHeight  = maxObjectHeight( pic );
             double X_avgObjectWidth   = avgObjectWidth( pic );
             double X_avgObjectHeight  = avgObjectHeight( pic );
+            double X_numIntersections = numIntersections( pic );
             
             /* @@@ DO NOT ADD NON-FEATURE CODE ABOVE THIS LINE @@@ */
             
@@ -465,6 +452,7 @@ public class MLDetector
             featureData.add( X_maxObjectHeight  );
             featureData.add( X_avgObjectWidth   );
             featureData.add( X_avgObjectHeight  );
+            featureData.add( X_numIntersections );
             
             //Make guess based on feature data
             boolean guessIsA = makeGuess( weightsFileName, featureData );
@@ -506,12 +494,12 @@ public class MLDetector
     /**
      * Method that updates the success rate across multiple instances in the
      * progress file
+     * 
      * @param progressFileName The name of the text file that details the success rate
      *                         across multiple instances evaluated
      * @param success True if the program was successful on this instance, false otherwise
      */
-    private void updateProgress( String progressFileName, boolean success )
-    {
+    private void updateProgress( String progressFileName, boolean success ) {
         //Format of line: 1. Correct! 13/20 65%    ... or ...    2. Incorrect. 17/25 68%
         
         Scanner sc = getScanner( progressFileName );
@@ -519,8 +507,7 @@ public class MLDetector
         int correctSoFar = 0;
         int totalRuns = 1;
         
-        while( sc.hasNextLine() )
-        {
+        while( sc.hasNextLine() ) {
             String line = sc.nextLine();
             
             if( line.isEmpty() ) break;
@@ -546,22 +533,21 @@ public class MLDetector
     /**
      * Method that adjusts the weights based on the results of the last training image result.
      * Note that once the program is done training, this method should no longer be run
+     * 
      * @param isA True if the image is a classification A, false if it is classification B
      * @param weightsFileName The name of the text file containing the weights
      * @param featureData The list of feature data from this instance
      * @return double The total number of iterations. This is used to keep track of progress
      */
-    private double changeWeights( boolean isA, String weightsFileName, ArrayList<Double> featureData )
-    {
+    private double changeWeights( boolean isA, String weightsFileName, ArrayList<Double> featureData ) {
         ArrayList<Pair> weightList = getWeights( weightsFileName );
         ArrayList<String> featureWeightData = new ArrayList<String>();
         
         DecimalFormat df = new DecimalFormat("0.##");
 
-        int totalFeatures      = weightList.size() - 1; //Last Pair holds the iteration total\
+        int totalFeatures      = weightList.size() - 1; //Last Pair holds the iteration total
         double totalIterations = weightList.get( totalFeatures ).a;
-        for( int rep = 0; rep < totalFeatures; rep++ )
-        {
+        for( int rep = 0; rep < totalFeatures; rep++ ) {
             double firstWeight  = 0.0;
             double secondWeight = 0.0;
             String placeholder  = "";
@@ -591,18 +577,17 @@ public class MLDetector
     
     /**
      * Method that updates the weights text file with the new weight data
+     * 
      * @param weightsFileName The name of the weight text file
      * @param featureWeightData The String data to write to the weights file
      */
-    private void updateWeights( String weightsFileName, ArrayList<String> featureWeightData )
-    {
+    private void updateWeights( String weightsFileName, ArrayList<String> featureWeightData ) {
         Scanner sc = getScanner( weightsFileName );
         
         String text = "";
         
         int rep = 0;
-        while( sc.hasNextLine() )
-        {
+        while( sc.hasNextLine() ) {
             String[] line = sc.nextLine().split(" ");
             text += line[0] + " " + featureWeightData.get(rep++);
             if( sc.hasNextLine() )
@@ -618,13 +603,13 @@ public class MLDetector
      * Method that evaluates the feature data of this instance and the weights of previous
      * instances to make a guess on whether this image is of the first classification (true)
      * or the second classification (false)
+     * 
      * @param weightsFileName The file name that contains the weights
      * @param featureDate The list of this instance's feature data
      * @return boolean True is the program believes this image is the first classification,
      *                 false if the program believes this image is the second classification
      */
-    private boolean makeGuess( String weightsFileName, ArrayList<Double> featureData )
-    {
+    private boolean makeGuess( String weightsFileName, ArrayList<Double> featureData ) {
         ArrayList<Pair> weightList = getWeights( weightsFileName );
         
         double firstAverageWeight   = 0.0;
@@ -633,8 +618,7 @@ public class MLDetector
         
         int totalFeatures = weightList.size() - 1; //Last Pair holds the iteration total\
         double totalIterations = weightList.get( totalFeatures ).a;
-        for( int rep = 0; rep < totalFeatures; rep++ )
-        {
+        for( int rep = 0; rep < totalFeatures; rep++ ) {
             double weightListA  = weightList.get(rep).a;
             double weightListB  = weightList.get(rep).b;
             double featureValue = featureData.get(rep);
@@ -660,16 +644,15 @@ public class MLDetector
     
     /**
      * Method that grabs that weight pair values from the weightsFileName text file
+     * 
      * @param weightsFileName The name of the text file with the weight data
      * @return The list of Pair of weights for the first and second classification. The very last Pair contains the iteration total (both entries)
      */
-    private ArrayList<Pair> getWeights( String weightsFileName )
-    {
+    private ArrayList<Pair> getWeights( String weightsFileName ) {
         Scanner sc = getScanner( weightsFileName );
         
         ArrayList<Pair> weightPairs = new ArrayList<Pair>();
-        while( sc.hasNextLine() )
-        {
+        while( sc.hasNextLine() ) {
             String[] line = sc.nextLine().split(" ");
             weightPairs.add( new Pair( Double.parseDouble( line[1] ), Double.parseDouble( line[2] ) ) );
             if( !sc.hasNextLine() ) //Add iteration count in the last Pair
@@ -681,8 +664,7 @@ public class MLDetector
         return weightPairs;
     }
     
-    private class Pair
-    {
+    private class Pair {
         public double a, b;
         public Pair( double a, double b ) { this.a = a; this.b = b; }
     }
@@ -693,10 +675,10 @@ public class MLDetector
      * compilation. After these weights are generated by this method, this method should
      * not be run again, unless the feature methods are changed, or unless the user wants
      * to scrub the weight adjustments and start anew.
+     * 
      * @param weightsFileName The name of the file that holds the weights of the features
      */
-    private void generateWeights( String weightsFileName )
-    {
+    private void generateWeights( String weightsFileName ) {
         Scanner sc     = getScanner( weightsFileName );
         Scanner thisSc = getScanner( "MLDetector.java" );
         
@@ -704,8 +686,7 @@ public class MLDetector
         LinkedHashSet<String> MLDetectorFeatureNames = new LinkedHashSet<String>();
         
         //Get Weights.txt method names
-        while( sc.hasNextLine() )
-        {
+        while( sc.hasNextLine() ) {
             String line = sc.nextLine();
             
             if( line.isEmpty() ) break;
@@ -716,15 +697,12 @@ public class MLDetector
         }
         
         //Get this file's feature method names
-        while( thisSc.hasNextLine() )
-        {
+        while( thisSc.hasNextLine() ) {
             String line = thisSc.nextLine();
             
-            if( line.trim().equals( "//Feature Grabbing Methods" ) )
-            {
+            if( line.trim().equals( "//Feature Grabbing Methods" ) ) {
                 String nextLine = thisSc.nextLine();
-                while( nextLine.contains("=") )
-                {
+                while( nextLine.contains("=") ) {
                     String token = nextLine.split("=")[1].trim();
                     String methodName = token.substring( 0, token.indexOf("(") ).trim();
                     MLDetectorFeatureNames.add( methodName );
@@ -742,8 +720,8 @@ public class MLDetector
         DecimalFormat df = new DecimalFormat("0.##");
         String text = "";
         Iterator iterator = MLDetectorFeatureNames.iterator();
-        while( iterator.hasNext() )
-        {                                  // Classification 1                         Classification 2                 Iteration #
+        while( iterator.hasNext() ) {
+            //                                      Classification 1                         Classification 2           Iteration #
             text += iterator.next() + " " + df.format( random.nextDouble() ) + " " + df.format( random.nextDouble() ) + " 1.0";
             if( iterator.hasNext() )
                 text += "\n";
@@ -757,26 +735,19 @@ public class MLDetector
     
     /**
      * Method that gets a Scanner object given the file name
+     * 
      * @param fileName The name of the file to find
      * @return Scanner A Scanner object that is scanning the file found
      */
-    private Scanner getScanner( String fileName )
-    {
+    private Scanner getScanner( String fileName ) {
         File file  = null;
         Scanner sc = null;
-        try
-        {
+        try {
             file = getFile( fileName );
             sc = new Scanner( file );
         }
-        catch( FileNotFoundException e )
-        {
-            e.printStackTrace();
-        }
-        catch( IOException e )
-        {
-            e.printStackTrace();
-        }
+        catch( FileNotFoundException e ) { e.printStackTrace(); }
+        catch( IOException e ) { e.printStackTrace(); }
         
         return sc;
     }
@@ -824,9 +795,7 @@ public class MLDetector
         Scanner scanner = null;
         try {
             scanner = new Scanner( file );
-        } catch( FileNotFoundException e ) {
-            e.printStackTrace();
-        }
+        } catch( FileNotFoundException e ) { e.printStackTrace(); }
         
         String text = "";
         while( scanner.hasNextLine() )
@@ -849,9 +818,7 @@ public class MLDetector
             fw = new FileWriter( fileLoc );
             fw.write( text );
             fw.close();
-        } catch( IOException e ) {
-            e.printStackTrace();
-        }
+        } catch( IOException e ) { e.printStackTrace(); }
     }
     
     /**
@@ -866,9 +833,7 @@ public class MLDetector
             fw = new FileWriter( fileLoc, true );
             fw.write( text );
             fw.close();
-        } catch( IOException e ) {
-            e.printStackTrace();
-        }
+        } catch( IOException e ) { e.printStackTrace(); }
     }
     
     private void SOPln(  String str ) { System.out.println( str );        }
